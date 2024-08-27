@@ -6,7 +6,12 @@ export enum Region {
   Europe = 'Europe',
   Oceania = 'Oceania',
 }
-
+//creamos una nueva interface
+export interface SmallCountry {
+  name: string;
+  ccz3: string;
+  borders: string[];
+}
 
 export interface Country {
   name:         Name;

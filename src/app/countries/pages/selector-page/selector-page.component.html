@@ -17,6 +17,19 @@
       </div>
     </div>
 
+     <!-- Countries -->
+     <div class="row mb-3">
+      <div class="col">
+        <label class="form-label">País:</label>
+        <select formControlName="country" class="form-control">
+          <option value="">-- Seleccione País --</option>
+          <!-- el value va entre corchetes porque necesitamos el valor de la región -->
+          <!-- <option *ngFor="let region of regions" [value]="region">{{ region }}</option> -->
+        </select>
+
+      </div>
+    </div>
+
  </form>
 
  <h3>Formulario</h3>

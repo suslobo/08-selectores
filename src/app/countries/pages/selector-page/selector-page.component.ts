@@ -1,21 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CountriesService } from '../../services/countries.service';
-import { Region } from '../../interfaces/country.interfaces';
+import { Region, SmallCountry } from '../../interfaces/country.interfaces';
 import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-selector-page',
   templateUrl: './selector-page.component.html',
-  styles: ``
+  styles: []
 })
 export class SelectorPageComponent implements OnInit {
+
+  public countriesByRegion: SmallCountry[] = [];
 
   public myForm: FormGroup = this.fb.group({
     region: ['', Validators.required ],
     country: ['', Validators.required ],
     borders: ['', Validators.required ],
-  })
+  });
   //hay que enlazar el myForm con el html
 
 
@@ -33,20 +35,22 @@ export class SelectorPageComponent implements OnInit {
         console.log({ region })
       }); */
     this.onRegionChanged();
+    // this.onCountryChanged();
   }
 
   get regions(): Region[] {
     return this.countriesService.regions;
   }
 
+
   //creamos un nuevo método y va a tener toda la implemtación
   onRegionChanged(): void {
-    this.myForm.get('retion')!.valueChanges
+    this.myForm.get('region')!.valueChanges
     .pipe(
       switchMap( region => this.countriesService.getCountriesByRegion(region) ),
     )
-    .subscribe( region => {
-      console.log({ region })
+    .subscribe( countries => {
+      this.countriesByRegion = countries;
     });
   }
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Country, Region, SmallCountry } from '../interfaces/country.interfaces';
-import { Observable, of, tap, map } from 'rxjs';
+import { Observable, of, map, combineLatest } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
@@ -51,6 +51,22 @@ export class CountriesService {
           borders: country.borders ?? [],
           }))
         )
+    }
+
+    //nuevo método
+    //esto es una lista de fronteras. Yo quiero que me muestre la de cada pais al que llamo
+    getCountryBordersByCodes( borders: string[] ): Observable<SmallCountry[]> {
+      //si los bordes están vacíos regreso un array vacio
+      if ( !borders || borders.length === 0 ) return of([]);
+
+      const countriesRequest:Observable<SmallCountry>[]  = [];
+
+      borders.forEach( code => {
+        const request = this.getCountryByAlphaCode( code );
+        countriesRequest.push( request );
+      });
+
+      return combineLatest( countriesRequest );
     }
 
   }

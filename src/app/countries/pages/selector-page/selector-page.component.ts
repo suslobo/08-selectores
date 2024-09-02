@@ -12,7 +12,7 @@ import { filter, switchMap, tap } from 'rxjs';
 export class SelectorPageComponent implements OnInit {
 
   public countriesByRegion: SmallCountry[] = [];
-  public borders: string[] = [];
+  public borders: SmallCountry[] = [];
 
   public myForm: FormGroup = this.fb.group({
     region: ['', Validators.required ],
@@ -49,11 +49,11 @@ export class SelectorPageComponent implements OnInit {
   //creamos un nuevo método y va a tener toda la implemtación
   //aquí cambia la región
   onRegionChanged(): void {
-    this.myForm.get('region')!.valueChanges
+    this.myForm.get('region')!.valueChanges //cuando la region cambia estoy disparando un efecto secundario los dos tap
     .pipe(
       tap( () => this.myForm.get('country')!.setValue('') ), //antes de que pidamos los países lo estamos limpiamos
-      tap( (region) => this.borders = []),
-      switchMap( (region) => this.countriesService.getCountriesByRegion(region) ),
+      tap( (region) => this.borders = []), //efecto secundario para borrar los bordes
+      switchMap( (region) => this.countriesService.getCountriesByRegion(region) ), //el switchMap va a tomar el valor del observable anterior y va a suscribrise al nuevo observable
     )
     .subscribe( countries => {
       this.countriesByRegion = countries;
@@ -64,12 +64,14 @@ export class SelectorPageComponent implements OnInit {
   onCountryChanged(): void {
     this.myForm.get('country')!.valueChanges
     .pipe(
-      tap( () => this.myForm.get('border')!.setValue('') ), //antes de que pidamos los países lo estamos limpiamos
-      filter( (value: string) => value.length > 0),
-      switchMap( (alphaCode) => this.countriesService.getCountryByAlphaCode(alphaCode) ),
+      tap( () => this.myForm.get('border')!.setValue('') ), //antes de que pidamos los países lo estamos limpiamos. Tap: efecto secundario
+      filter( (value: string) => value.length > 0), //filter está filtrando
+      switchMap( (alphaCode) => this.countriesService.getCountryByAlphaCode(alphaCode) ), //switchMap lo que regreser lo suscribimos a un nuevo observable
+      switchMap( (country) => this.countriesService.getCountryBordersByCodes( country.borders )),
+
     )
-    .subscribe( country => {
-      this.borders = country.borders;
+    .subscribe( countries => {
+      this.borders = countries;
     });
   }
 
